@@ -5,7 +5,7 @@
 const double ULTRASONIC_THRESHOLD = 500;
 const double WATER_THRESHOLD = 700;
 const double GYROSCOPE_THRESHOLD = 50;
-const String DATA_CHANNEL = "data";
+const char DATA_CHANNEL[] = "data";
 
 char ssid[] = "Infinix ZERO ULTRA"; 
 char pass[] = "qwertyuiop";           
@@ -112,7 +112,7 @@ void sendData(bool isObstacleDetected, bool isWaterDetected, bool isFall){
                 String((isWaterDetected ? "1" : "0")) + " " +
                 String((isFall ? "1" : "0"));
 
-  mqttClient.publish("data", data.c_str());
+  mqttClient.publish(DATA_CHANNEL, data.c_str());
 }
 
 bool getObstacleDetected() {
