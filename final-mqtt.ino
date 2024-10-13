@@ -8,6 +8,7 @@ const double ULTRASONIC_THRESHOLD_3 = 300;
 const double WATER_THRESHOLD = 100;
 const double GYROSCOPE_THRESHOLD = 200;
 const char DATA_CHANNEL[] = "data";
+const char SETTINGS_CHANNEL[] = "settings";
 
 // PINS
 const int buttonPins[3] = {10, 11, 12};
@@ -167,7 +168,7 @@ void connectToMQTT() {
     if (mqttClient.connect("thisIsUniqueIDSDSDSD")) {
       Serial.println("connected");
       mqttClient.publish("connections", "Arduino connected");
-      mqttClient.subscribe("blindstick");
+      mqttClient.subscribe(SETTINGS_CHANNEL);
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
