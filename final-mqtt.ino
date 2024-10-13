@@ -20,6 +20,10 @@ bool relayState = LOW;
 const int buzzerPin = 9;
 bool alarmActive = false;
 
+// SETTINGS
+double volume = 1;
+double intensity = 1;
+
 // MQTT AND WIFI COMMUNICATION
 char ssid[] = "meowa";
 char pass[] = "asdfghjkl";          
@@ -52,6 +56,7 @@ void setup() {
 
   pinMode(waterSensorPowerPin, OUTPUT);
   digitalWrite(waterSensorPowerPin, LOW);
+  pinMode(buzzerPin, OUTPUT);
 
   for (int i = 0; i < 3; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
@@ -129,6 +134,7 @@ void alarmSignal() {
 
   for (int i = 0; i < 10 && alarmActive; i++) {  // Stop if alarmActive becomes false
     tone(buzzerPin, frequency1);
+    analogWrite(buzzerPin, volume * 255);
     delay(duration);
     noTone(buzzerPin);
     delay(50);
@@ -179,6 +185,13 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
+
+  // Data format {"volume intensity"}
+  sscanf(input.c_str(), "%lf %lf", &volume, &intensity);
+  Serial.print("Volume: ");
+  Serial.println(volume);
+  Serial.print("Intensity: ");
+  Serial.println(intensity);
 }
 
 void sendData(bool isObstacle1, bool isObstacle2, bool isObstacle3, bool isWaterDetected, bool isFall, bool isEmergencyPressed, bool isPowerPressed, bool isStopPressed) {
