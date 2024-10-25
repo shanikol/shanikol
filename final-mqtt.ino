@@ -20,6 +20,7 @@ const int relayPin = 8;
 bool relayState = LOW;   
 const int buzzerPin = 9;
 bool alarmActive = false;
+bool interrupted = false;
 
 // SETTINGS
 double volume = 1;
@@ -75,6 +76,8 @@ void setup() {
 }
 
 void loop() {
+  interrupted = false;
+  
   if (WiFi.status() != WL_CONNECTED) {
     connectToWifi();
   }
@@ -91,13 +94,13 @@ void loop() {
     alarmSignal();
     sendData(false, false, false, false, false, isEmergencyPressed, false, false);
     mqttClient.loop();
-    return;
+    interrupted = true;
   }
 
   if (isPowerPressed) {
     sendData(false, false, false, false, false, false, isPowerPressed, false);
     mqttClient.loop();
-    return;
+    interrupted = true;
   }
 
 if (isStopPressed) {
@@ -108,21 +111,18 @@ if (isStopPressed) {
   // Stop the alarm
   alarmActive = false;
   noTone(buzzerPin);
-
-  sendData(false, false, false, false, false, false, false, isStopPressed);
-  mqttClient.loop();
-  return;
 }
 
+  if (!interrupted){
+    bool isObstacle1 = getObstacleDetected(0, ULTRASONIC_THRESHOLD_1, relayPin);
+    bool isObstacle2 = getObstacleDetected(1, ULTRASONIC_THRESHOLD_2, relayPin);
+    bool isObstacle3 = getObstacleDetected(2, ULTRASONIC_THRESHOLD_3, relayPin);
+    bool isWaterDetected = getWaterDetected();
+    bool isFall = getFall();
 
-  bool isObstacle1 = getObstacleDetected(0, ULTRASONIC_THRESHOLD_1, relayPin);
-  bool isObstacle2 = getObstacleDetected(1, ULTRASONIC_THRESHOLD_2, relayPin);
-  bool isObstacle3 = getObstacleDetected(2, ULTRASONIC_THRESHOLD_3, relayPin);
-  bool isWaterDetected = getWaterDetected();
-  bool isFall = getFall();
-
-  sendData(isObstacle1, isObstacle2, isObstacle3, isWaterDetected, isFall, isEmergencyPressed, isPowerPressed, isStopPressed);
-  mqttClient.loop();
+    sendData(isObstacle1, isObstacle2, isObstacle3, isWaterDetected, isFall, isEmergencyPressed, isPowerPressed, isStopPressed);
+    mqttClient.loop();
+  }
 }
 
 //BUZZER ALARM
