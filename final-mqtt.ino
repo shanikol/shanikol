@@ -77,7 +77,7 @@ void setup() {
 
 void loop() {
   interrupted = false;
-  
+
   if (WiFi.status() != WL_CONNECTED) {
     connectToWifi();
   }
@@ -103,15 +103,15 @@ void loop() {
     interrupted = true;
   }
 
-if (isStopPressed) {
-  //Stop the vibration
-  relayState = LOW;
-  digitalWrite(relayPin, relayState);
+  if (isStopPressed) {
+    //Stop the vibration
+    relayState = LOW;
+    digitalWrite(relayPin, relayState);
 
-  // Stop the alarm
-  alarmActive = false;
-  noTone(buzzerPin);
-}
+    // Stop the alarm
+    alarmActive = false;
+    noTone(buzzerPin);
+  }
 
   if (!interrupted){
     bool isObstacle1 = getObstacleDetected(0, ULTRASONIC_THRESHOLD_1, relayPin);
@@ -119,6 +119,13 @@ if (isStopPressed) {
     bool isObstacle3 = getObstacleDetected(2, ULTRASONIC_THRESHOLD_3, relayPin);
     bool isWaterDetected = getWaterDetected();
     bool isFall = getFall();
+
+    if (isObstacle1 || isObstacle2 || isObstacle3 || isWaterDetected){
+      digitalWrite(relayPin, HIGH);
+    }
+    else {
+      digitalWrite(relayPin, LOW);
+    }
 
     sendData(isObstacle1, isObstacle2, isObstacle3, isWaterDetected, isFall, isEmergencyPressed, isPowerPressed, isStopPressed);
     mqttClient.loop();
@@ -133,7 +140,7 @@ void alarmSignal() {
 
   alarmActive = true;
 
-  for (int i = 0; i < 10 && alarmActive; i++) {  // Stop if alarmActive becomes false
+  for (int i = 0; i < 10 && alarmActive; i++) {
     tone(buzzerPin, frequency1);
     analogWrite(buzzerPin, volume * 255);
     delay(duration);
@@ -223,11 +230,12 @@ bool getObstacleDetected(int sensorIndex, double threshold, int relayPin) {
     float distance_cm = 0.017 * duration_us;
 
     if (distance_cm >= 2 && distance_cm <= threshold) {
-      if (distance_cm >= 20) {
+
+      // Check depth
+      if (sensorIndex == 2 && distance_cm >= 20) {
         digitalWrite(relayPin, HIGH);
-      } else {
-        digitalWrite(relayPin, LOW);
       }
+
       return true;
     }
   }
