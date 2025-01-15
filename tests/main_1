@@ -27,7 +27,7 @@ const int emergencyButtonPin = 8;
 const int stopButtonPin = 9;
 const int buzzerPin = 10;
 const int relayPin = 11;
-const int waterSensorPowerPin = 12;
+//const int waterSensorPowerPin = 12;
 const int waterSensorDataPin = A0;
 
 char ssid[] = "meowa"; 
@@ -258,10 +258,10 @@ double getDepth(){
 }
 
 int getMoisture() {
-  digitalWrite(waterSensorPowerPin, HIGH);
+  //digitalWrite(waterSensorPowerPin, HIGH);
   delay(100);
   int value = analogRead(waterSensorDataPin);
-  digitalWrite(waterSensorPowerPin, LOW);
+  //digitalWrite(waterSensorPowerPin, LOW);
   Serial.println("Water sensor: " + String(value));
   return value;
 }
