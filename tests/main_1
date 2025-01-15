@@ -2,7 +2,7 @@
 #include <PubSubClient.h>
 #include <Arduino_LSM6DS3.h>
 
-const long WIFI_RECONNECT_COOLDOWN = 5000
+const long WIFI_RECONNECT_COOLDOWN = 5000;
 const long MQTT_RECONNECT_COOLDOWN = 5000;
 const long EMERGENCY_COOLDOWN = 10000;
 const long EMERGENCY_DURATION = 3000;
@@ -32,8 +32,8 @@ const int waterSensorDataPin = A0;
 
 char ssid[] = "meowa"; 
 char pass[] = "asdfghjkl";
-// const char mqttServer[] = "34.1.195.29";
-const char mqttServer[] = "mqtt-dashboard.com";
+const char mqttServer[] = "34.1.195.29";
+//const char mqttServer[] = "mqtt-dashboard.com";
 const int mqttPort = 1883;
 
 double volume = 0;
@@ -121,21 +121,28 @@ void loop() {
       lastAlarmTriggered = currentMillis;
     }
 
-    if (fall && !lastFallDetected) {
+    if (fall) {
       alarmMode = true;
       lastAlarmTriggered = currentMillis;
     }
 
     bool depthOnly = depthDetected && !obstacleDetected && !waterDetected && !fall;
 
-    if (alarmMode && !depthOnly) {
-      message = String((obstacleDetected ? "1" : "0")) + " " +
-                String((waterDetected ? "1" : "0")) + " " +
-                String((fall ? "1" : "0")) + " " +
-                distanceString + " " +
-                depthString; 
-      sendData(message);
-    }
+    // if (alarmMode && !depthOnly) {
+    //   message = String((obstacleDetected ? "1" : "0")) + " " +
+    //             String((waterDetected ? "1" : "0")) + " " +
+    //             String((fall ? "1" : "0")) + " " +
+    //             distanceString + " " +
+    //             depthString; 
+    //   sendData(message);
+    // }
+
+    message = String((obstacleDetected ? "1" : "0")) + " " +
+              String((waterDetected ? "1" : "0")) + " " +
+              String((fall ? "1" : "0")) + " " +
+              distanceString + " " +
+              depthString; 
+    sendData(message);
     
     lastObstacleDetected = obstacleDetected;
     lastWaterDetected = waterDetected;
@@ -171,7 +178,7 @@ void loop() {
 
   if (alarmMode && currentMillis - lastAlarmTriggered <= ALARM_DURATION) {
     digitalWrite(relayPin, HIGH);
-    digitalWrite(buzzerPin, LOW);
+    digitalWrite(buzzerPin, HIGH);
   }
 
   mqttClient.loop();
