@@ -12,7 +12,7 @@ const double DISTANCE_MIN_THRESHOLD = 20;
 const double DISTANCE_MAX_THRESHOLD = 100;  
 const double DEPTH_MIN_THRESHOLD = 20;
 const double DEPTH_MAX_THRESHOLD = 100;
-const double WATER_THRESHOLD = 1000;
+const double WATER_THRESHOLD = 100;
 const double GYROSCOPE_THRESHOLD = 200;
 const char DATA_CHANNEL[] = "data";
 const char SETTINGS_CHANNEL[] = "settings";
@@ -65,7 +65,7 @@ void setup() {
   pinMode(buzzerPin, OUTPUT);
   pinMode(relayPin, OUTPUT);
   pinMode(waterSensorDataPin, OUTPUT);
-  //digitalWrite(waterSensorPowerPin, LOW);
+  digitalWrite(waterSensorPowerPin, LOW);
 
   digitalWrite(relayPin, LOW);
   digitalWrite(buzzerPin, HIGH);
@@ -258,12 +258,12 @@ double getDepth(){
 }
 
 int getMoisture() {
-  //digitalWrite(waterSensorPowerPin, HIGH);
+  digitalWrite(waterSensorPowerPin, HIGH);
   delay(100);
   int value = analogRead(waterSensorDataPin);
-  //digitalWrite(waterSensorPowerPin, LOW);
+  digitalWrite(waterSensorPowerPin, LOW);
   Serial.println("Water sensor: " + String(value));
-  return value;
+  return (value >= WATER_THRESHOLD);
 }
 
 bool getFall() {
