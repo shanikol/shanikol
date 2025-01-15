@@ -2,7 +2,7 @@
 #include <PubSubClient.h>
 #include <Arduino_LSM6DS3.h>
 
-const long WIFI_RECONNECT_COOLDOWN = 5000;
+const long WIFI_RECONNECT_COOLDOWN = 5000
 const long MQTT_RECONNECT_COOLDOWN = 5000;
 const long EMERGENCY_COOLDOWN = 10000;
 const long EMERGENCY_DURATION = 3000;
